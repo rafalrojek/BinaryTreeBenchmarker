@@ -82,14 +82,86 @@ public class AVLTree implements Tree<AVLNode> {
 
     @Override
     public boolean removeNode(Integer value) {
-        //TODO Implement removing AVL node
-        return false;
+        AVLNode node = findNode(value);
+        if (node == null) return false;
+        removeNode(node);
+        return true;
     }
 
     @Override
     public AVLNode findNode(Integer value) {
         if (root != null) return root.findNode(value);
         else return null;
+    }
+
+    private AVLNode removeNode (AVLNode x) {
+        AVLNode y;
+        boolean nest = false;
+
+        if (x.getLeft() != null && x.getRight() != null) y = removeNode(x.getPredecessor());
+        else {
+            if (x.getLeft() != null) {
+                y = x.getLeft();
+                x.setLeft(null);
+            } else {
+                y = x.getRight();
+                x.setRight(null);
+            }
+            x.setBf(0);
+            nest = true;
+        }
+
+        if (y != null) {
+            y.setFather(x.getFather());
+            y.setLeft(x.getLeft());
+            if (y.getLeft() != null) y.getLeft().setFather(y);
+            y.setRight(x.getRight());
+            if (y.getRight() != null) y.getRight().setFather(y);
+            y.setBf(x.getBf());
+        }
+
+        if (x.getFather() == null) root = y;
+        else if (x.getFather().getLeft() == x) x.getFather().setLeft(y);
+        else x.getFather().setRight(y);
+
+
+        if (nest) finishDelete(x, y);
+        return x;
+    }
+
+    private void finishDelete(AVLNode x, AVLNode y) {
+        AVLNode z = y;
+        AVLNode t;
+        y = x.getFather();
+        while (y != null) {
+            if (y.getBf() == 0) {
+                if (y.getLeft() == z) y.setBf(-1);
+                else y.setBf(1);
+                break;
+            }
+            else if ((y.getBf() == 1 && y.getLeft() == z) || (y.getBf() == -1 && y.getRight() == z)) {
+                y.setBf(0);
+                z = y;
+                y = y.getFather();
+            }
+            else {
+                if (y.getLeft() == z) t= y.getRight();
+                else t = y.getLeft();
+
+                if (t.getBf() == 0) {
+                    if (y.getBf() == 1) leftLeftRotate(y);
+                    else rightRightRotate(y);
+                }
+                else if (y.getBf().equals(t.getBf())) {
+                    if (y.getBf() == 1) leftLeftRotate(y);
+                    else rightRightRotate(y);
+                }
+                else {
+                    if (t.getBf() == 1) leftRightRotate(y);
+                    else rightLeftRotate(y);
+                }
+            }
+        }
     }
 
     private void rightRightRotate (AVLNode node) {
