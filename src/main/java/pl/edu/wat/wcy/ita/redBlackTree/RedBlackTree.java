@@ -1,104 +1,103 @@
 package pl.edu.wat.wcy.ita.redBlackTree;
-
 import lombok.Data;
+import lombok.NoArgsConstructor;
 import pl.edu.wat.wcy.ita.Tree.Tree;
-import java.util.LinkedList;
 
 @Data
+@NoArgsConstructor
 public class RedBlackTree implements Tree<RedBlackNode> {
-    private static LinkedList<RedBlackTree> container = new LinkedList<>();
-    private  RedBlackNode nil = new RedBlackNode(null,Color.Black);
-    private RedBlackNode root;
-    private String state;
+    public static RedBlackNode nil = new RedBlackNode();
+    private RedBlackNode root = nil;
+    private Integer nodeDepth = 0;
 
-    RedBlackTree (String state) {
-        RedBlackTree last = container.getLast();
-        if (last != null && last.root != null) this.root = last.getRoot().copy(null);
-        this.state = state;
-        container.addLast(this);
+    public RedBlackTree(RedBlackTree redBlackTree) {
+        if (redBlackTree != null && redBlackTree.getRoot() != nil) this.root = redBlackTree.getRoot().copy(null);
+        else this.root = nil;
+        nodeDepth = 0;
     }
 
     @Override
-    public boolean addNode (Integer value) {
-        if (findNode(value) != null) return false;
+    public void addNode (Integer value) {
+        if (findNode(value) != nil) return;
 
-        RedBlackNode node = new RedBlackNode(value, Color.Red);
-        node.setLeft(nil);
-        node.setRight(nil);
-        node.setFather(root);
-
-        if (node.getFather() == nil) root = node;
+        RedBlackNode x = new RedBlackNode(value, Color.Red);
+        x.setFather(root);
+        if (x.getFather() == nil) root = x;
         else while (true) {
-            if (value < node.getFather().getValue()) {
-                if (node.getFather().getLeft() == nil) {
-                    node.getFather().setLeft(node);
+            if (value < x.getFather().getValue()) {
+                if (x.getFather().getLeft() == nil) {
+                    x.getFather().setLeft(x);
                     break;
                 }
-                node.setFather(node.getFather().getLeft());
+                x.setFather(x.getFather().getLeft());
             }
             else {
-                if(node.getFather().getRight() == nil) {
-                    node.getFather().setRight(node);
+                if(x.getFather().getRight() == nil) {
+                    x.getFather().setRight(x);
                     break;
                 }
-                node.setFather(node.getFather().getRight());
+                x.setFather(x.getFather().getRight());
             }
         }
+        nodeDepth = root.getNodeDepth(value);
+        RedBlackNode y;
+        while (x != root && x.getFather().getColor() == Color.Red) {
+            if (x.getFather() == x.getFather().getFather().getLeft()) {
+                y = x.getFather().getFather().getRight();
 
-        RedBlackNode tmp;
-        while (node != root && node.getFather().getColor() == Color.Red) {
-            if (node.getFather() == node.getFather().getFather().getLeft()) {
-                tmp = node.getFather().getFather().getRight();
-
-                if (tmp.getColor() == Color.Red) {
-                    node.getFather().setColor(Color.Black);
-                    tmp.setColor(Color.Black);
-                    node.getFather().getFather().setColor(Color.Red);
+                if (y.getColor() == Color.Red) {
+                    x.getFather().setColor(Color.Black);
+                    y.setColor(Color.Black);
+                    x.getFather().getFather().setColor(Color.Red);
+                    x = x.getFather().getFather();
                     continue;
                 }
 
-                if (node == node.getFather().getRight()) {
-                    node = node.getFather();
-                    leftRotate(node);
+                if (x == x.getFather().getRight()) {
+                    x = x.getFather();
+                    leftRotate(x);
                 }
 
-                node.getFather().setColor(Color.Black);
-                node.getFather().getFather().setColor(Color.Red);
-                rightRotate(node.getFather().getFather());
+                x.getFather().setColor(Color.Black);
+                x.getFather().getFather().setColor(Color.Red);
+                rightRotate(x.getFather().getFather());
+                break;
             }
             else {
-                tmp = node.getFather().getFather().getLeft();
+                y = x.getFather().getFather().getLeft();
 
-                if (tmp.getColor() == Color.Red) {
-                    node.getFather().setColor(Color.Black);
-                    tmp.setColor(Color.Black);
-                    node.getFather().getFather().setColor(Color.Red);
+                if (y.getColor() == Color.Red) {
+                    x.getFather().setColor(Color.Black);
+                    y.setColor(Color.Black);
+                    x.getFather().getFather().setColor(Color.Red);
+                    x = x.getFather().getFather();
                     continue;
                 }
 
-                if (node == node.getFather().getLeft()) {
-                    node = node.getFather();
-                    rightRotate(node);
+                if (x == x.getFather().getLeft()) {
+                    x = x.getFather();
+                    rightRotate(x);
                 }
 
-                node.getFather().setColor(Color.Black);
-                node.getFather().getFather().setColor(Color.Red);
-                leftRotate(node.getFather().getFather());
+                x.getFather().setColor(Color.Black);
+                x.getFather().getFather().setColor(Color.Red);
+                leftRotate(x.getFather().getFather());
+                break;
             }
-            break;
         }
         root.setColor(Color.Black);
-        return true;
+
     }
 
     @Override
-    public boolean removeNode (Integer value) {
+    public void removeNode (Integer value) {
         RedBlackNode X = findNode(value);
-        if (X == null) return false;
+        nodeDepth = root.getNodeDepth(value);
+        if (X == nil) return;
 
         RedBlackNode W, Y, Z;
         if (X.getLeft() == nil || X.getRight() == nil) Y = X;
-        else Y = X.getSuccessor(nil);
+        else Y = X.getSuccessor();
 
         if (Y.getLeft() != nil) Z = Y.getLeft();
         else Z = Y.getRight();
@@ -139,6 +138,7 @@ public class RedBlackTree implements Tree<RedBlackNode> {
                 Z.getFather().setColor(Color.Black);
                 W.getRight().setColor(Color.Black);
                 leftRotate(Z.getFather());
+                Z = root;
             }
             else {
                 W = Z.getFather().getLeft();
@@ -167,40 +167,72 @@ public class RedBlackTree implements Tree<RedBlackNode> {
                 Z.getFather().setColor(Color.Black);
                 W.getLeft().setColor(Color.Black);
                 rightRotate(Z.getFather());
+                Z = root;
             }
-            Z = root;
         }
         Z.setColor(Color.Black);
-        return true;
+    }
+
+    @Override
+    public Integer getTreeHeight() {
+        if (root == nil) return 0;
+        else return this.getTreeHeight(root);
+    }
+
+    @Override
+    public boolean isNull(RedBlackNode node) {
+        return node != nil;
+    }
+
+    @Override
+    public Integer getTreeLeafs() {
+        if (root == nil) return 0;
+        else return root.getTreeLeafs();
+    }
+
+    private Integer getTreeHeight(RedBlackNode node) {
+        if (node == nil) return 0;
+        int lh = getTreeHeight(node.getLeft());
+        int rh = getTreeHeight(node.getRight());
+        return Math.max(lh,rh)+1;
     }
 
     @Override
     public RedBlackNode findNode (Integer value) {
-        if (root != null) return root.findNode(value);
-        else return null;
+        nodeDepth = root.getNodeDepth(value);
+        if (root != nil) {
+            return root.findNode(value);
+        }
+        else return nil;
     }
 
-    private void leftRotate (RedBlackNode node) {
-        RedBlackNode tmp = node.getRight();
-        node.setRight(tmp.getLeft());
-        if (tmp.getLeft() != nil) tmp.getLeft().setFather(node);
-        tmp.setFather(node.getFather());
-        if (node.getFather() == nil) root = tmp;
-        else if (node == node.getFather().getLeft()) node.getFather().setLeft(tmp);
-        else node.getFather().setRight(tmp);
-        tmp.setLeft(node);
-        node.setFather(tmp);
+    private void leftRotate (RedBlackNode a) {
+        RedBlackNode b = a.getRight();
+        if (b == nil) return;
+        RedBlackNode p = a.getFather();
+        a.setRight(b.getLeft());
+        if (a.getRight() != nil) a.getRight().setFather(a);
+
+        b.setLeft(a);
+        b.setFather(p);
+        a.setFather(b);
+
+        if (p == nil) root = b;
+        else if (p.getLeft() == a) p.setLeft(b);
+        else p.setRight(b);
     }
 
-    private void rightRotate (RedBlackNode node) {
-        RedBlackNode tmp = node.getLeft();
-        node.setLeft(tmp.getRight());
-        if (tmp.getRight() != nil) tmp.getRight().setFather(node);
-        tmp.setFather(node.getFather());
-        if (node.getFather() == nil) root = tmp;
-        else if (node == node.getFather().getRight()) node.getFather().setRight(tmp);
-        else node.getFather().setLeft(tmp);
-        tmp.setRight(node);
-        node.setFather(tmp);
+    private void rightRotate (RedBlackNode a) {
+        RedBlackNode b = a.getLeft();
+        if (b == nil) return;
+        RedBlackNode p = a.getFather();
+        a.setLeft(b.getRight());
+        if (a.getLeft() != nil) a.getLeft().setFather(a);
+        b.setRight(a);
+        b.setFather(p);
+        a.setFather(b);
+        if (p == nil) root = b;
+        else if (a == p.getRight()) p.setRight(b);
+        else p.setLeft(b);
     }
 }

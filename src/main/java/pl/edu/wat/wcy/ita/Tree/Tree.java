@@ -1,7 +1,12 @@
 package pl.edu.wat.wcy.ita.Tree;
 
 public interface Tree<T> {
-    boolean addNode(Integer value);
-    boolean removeNode(Integer value);
+    void addNode(Integer value);
+    void removeNode(Integer value);
     T findNode(Integer value);
+    Node getRoot();
+    Integer getTreeHeight();
+    Integer getNodeDepth();
+    boolean isNull (T node);
+    Integer getTreeLeafs();
 }

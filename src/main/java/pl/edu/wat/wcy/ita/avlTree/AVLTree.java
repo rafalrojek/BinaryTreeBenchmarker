@@ -1,104 +1,131 @@
 package pl.edu.wat.wcy.ita.avlTree;
-
 import lombok.Data;
+import lombok.NoArgsConstructor;
 import pl.edu.wat.wcy.ita.Tree.Tree;
-import java.util.LinkedList;
 
 @Data
+@NoArgsConstructor
 public class AVLTree implements Tree<AVLNode> {
-    private static LinkedList<AVLTree> container = new LinkedList<>();
-    private AVLNode root;
-    private String state;
+    private AVLNode root = null;
+    private Integer nodeDepth = 0;
 
-    AVLTree (String state) {
-        AVLTree last = container.getLast();
-        if (last != null && last.root != null) this.root = last.getRoot().copy(null);
-        this.state = state;
-        container.addLast(this);
+    public AVLTree (AVLTree tree) {
+        if (tree != null && tree.getRoot() != null) this.root = tree.getRoot().copy(null);
     }
 
     @Override
-    public boolean addNode(Integer value) {
-        if (findNode(value) != null) return false;
+    public void addNode(Integer value) {
+        if (findNode(value) != null) return;
 
-        AVLNode node = new AVLNode(value);
-        AVLNode father = root;
+        AVLNode w = new AVLNode(value);
+        AVLNode p = root;
 
-        if (father == null) {
-            root = node;
-            return true;
+        if (p == null) {
+            root = w;
+            return;
         }
-        while (true)
-            if (value < father.getValue()) {
-                if (father.getLeft() != null) father = father.getLeft();
-                else  {
-                    father.setLeft(node);
+        while (true) {
+            if (value < p.getValue()) {
+                if (p.getLeft() == null){
+                    p.setLeft(w);
                     break;
                 }
-            }
-        else {
-            if (father.getRight() != null) father = father.getRight();
-            else {
-                father.setLeft(node);
-                break;
-            }
-        }
-        node.setFather(father);
+                p = p.getLeft();
 
-        if (father.getBf() != 0) father.setBf(0);
-        else {
-            if (father.getLeft() == node) father.setBf(1);
-            else father.setBf(-1);
-
-            AVLNode looper = father.getFather();
-            boolean rotate = false;
-            while (looper != null) {
-                if (looper.getBf() != 0) {
-                    rotate = true;
+            } else {
+                if (p.getRight() == null) {
+                    p.setRight(w);
                     break;
                 }
-
-                if (looper.getLeft() == father) looper.setBf(1);
-                else looper.setBf(-1);
-
-                father = looper;
-                looper = looper.getFather();
+                p = p.getRight();
             }
-            if (rotate) {
-                if (looper.getBf() == 1) {
-                    if(looper.getRight() == father) looper.setBf(0);
-                    else if (father.getBf() == -1) leftRightRotate(looper);
-                    else leftLeftRotate(looper);
+        }
+        w.setFather(p);
+        nodeDepth = root.getNodeDepth(value);
+
+        if (p.getBf() != 0) p.setBf(0);
+        else {
+            if (p.getLeft() == w) p.setBf(1);
+            else p.setBf(-1);
+
+            AVLNode r = p.getFather();
+            boolean t = false;
+            while (r != null) {
+                if (r.getBf() != 0) {
+                    t = true;
+                    break;
                 }
-                else {
-                    if (looper.getLeft() == father) looper.setBf(0);
-                    else if (father.getBf() == 1) rightLeftRotate(looper);
-                    else rightRightRotate(looper);
+                if (r.getLeft() == p) r.setBf(1);
+                else r.setBf(-1);
+
+                p = r;
+                r = r.getFather();
+            }
+            if (t) {
+                if (r.getBf() == 1) {
+                    if(r.getRight() == p) r.setBf(0);
+                    else if (p.getBf() == -1) leftRightRotate(r);
+                    else leftLeftRotate(r);
+                }
+                else if (r.getBf() == -1) {
+                    if (r.getLeft() == p) r.setBf(0);
+                    else if (p.getBf() == 1) rightLeftRotate(r);
+                    else rightRightRotate(r);
                 }
             }
         }
-        return true;
     }
 
     @Override
-    public boolean removeNode(Integer value) {
+    public Integer getTreeHeight() {
+        if (root == null) return 0;
+        else return getTreeHeight(root);
+    }
+
+    @Override
+    public boolean isNull(AVLNode node) {
+        return node != null;
+    }
+
+    @Override
+    public Integer getTreeLeafs() {
+        if (root == null) return 0;
+        else return root.getTreeLeafs();
+    }
+
+    private Integer getTreeHeight(AVLNode node) {
+        if (node == null) return 0;
+        int lh = getTreeHeight(node.getLeft());
+        int rh = getTreeHeight(node.getRight());
+        return Math.max(lh,rh)+1;
+    }
+
+    @Override
+    public void removeNode(Integer value) {
         AVLNode node = findNode(value);
-        if (node == null) return false;
+        if (node == null) return;
+        nodeDepth = root.getNodeDepth(value);
         removeNode(node);
-        return true;
     }
 
     @Override
     public AVLNode findNode(Integer value) {
-        if (root != null) return root.findNode(value);
+        AVLNode node = null;
+        if (root != null) node = root.findNode(value);
         else return null;
+        nodeDepth = root.getNodeDepth(value);
+        if (node == null || !node.getValue().equals(value)) return null;
+        else return node;
     }
 
     private AVLNode removeNode (AVLNode x) {
         AVLNode y;
-        boolean nest = false;
+        boolean nest;
 
-        if (x.getLeft() != null && x.getRight() != null) y = removeNode(x.getPredecessor());
+        if (x.getLeft() != null && x.getRight() != null) {
+            y = removeNode(x.getPredecessor());
+            nest = false;
+        }
         else {
             if (x.getLeft() != null) {
                 y = x.getLeft();
@@ -125,107 +152,121 @@ public class AVLTree implements Tree<AVLNode> {
         else x.getFather().setRight(y);
 
 
-        if (nest) finishDelete(x, y);
-        return x;
-    }
-
-    private void finishDelete(AVLNode x, AVLNode y) {
-        AVLNode z = y;
-        AVLNode t;
-        y = x.getFather();
-        while (y != null) {
-            if (y.getBf() == 0) {
-                if (y.getLeft() == z) y.setBf(-1);
-                else y.setBf(1);
-                break;
-            }
-            else if ((y.getBf() == 1 && y.getLeft() == z) || (y.getBf() == -1 && y.getRight() == z)) {
-                y.setBf(0);
-                z = y;
-                y = y.getFather();
-            }
-            else {
-                if (y.getLeft() == z) t= y.getRight();
-                else t = y.getLeft();
-
-                if (t.getBf() == 0) {
-                    if (y.getBf() == 1) leftLeftRotate(y);
-                    else rightRightRotate(y);
-                }
-                else if (y.getBf().equals(t.getBf())) {
-                    if (y.getBf() == 1) leftLeftRotate(y);
-                    else rightRightRotate(y);
+        if (nest) {
+            AVLNode z = y;
+            AVLNode t;
+            y = x.getFather();
+            while (y != null) {
+                if (y.getBf() == 0) {
+                    if (y.getLeft() == z) y.setBf(-1);
+                    else y.setBf(1);
+                    break;
                 }
                 else {
-                    if (t.getBf() == 1) leftRightRotate(y);
-                    else rightLeftRotate(y);
+                    if ((y.getBf() == 1 && y.getLeft() == z) || (y.getBf() == -1 && y.getRight() == z)) {
+                        y.setBf(0);
+                        z = y;
+                        y = y.getFather();
+                    }
+                    else {
+                        if (y.getLeft() == z) t= y.getRight();
+                        else t = y.getLeft();
+
+                        if (t.getBf() == 0) {
+                            if (y.getBf() == 1) leftLeftRotate(y);
+                            else rightRightRotate(y);
+                            break;
+                        }
+                        else if (y.getBf().equals(t.getBf())) {
+                            if (y.getBf() == 1) leftLeftRotate(y);
+                            else rightRightRotate(y);
+                            z = t;
+                            y = t.getFather();
+                        }
+                        else {
+                            if (y.getBf() == 1) leftRightRotate(y);
+                            else rightLeftRotate(y);
+                            z = y.getFather();
+                            y = z.getFather();
+                        }
+                    }
                 }
             }
         }
+        return x;
     }
 
-    private void rightRightRotate (AVLNode node) {
-        AVLNode b = node.getRight();
+    private void rightRightRotate (AVLNode a) {
+        AVLNode b = a.getRight();
+        AVLNode p = a.getFather();
 
-        node.setRight(b.getLeft());
-        if (node.getRight() != null) node.getRight().setFather(node);
+        a.setRight(b.getLeft());
+        if (a.getRight() != null) a.getRight().setFather(a);
 
-        b.setLeft(node);
-        b.setFather(node.getFather());
-        node.setFather(b);
+        b.setLeft(a);
+        b.setFather(p);
+        a.setFather(b);
 
-        finishRotate(node, b);
-    }
-
-    private void leftLeftRotate (AVLNode node) {
-        AVLNode b = node.getLeft();
-
-        node.setLeft(b.getRight());
-        if (node.getLeft() != null) node.getLeft().setFather(node);
-
-        b.setRight(node);
-        b.setFather(node.getFather());
-        node.setFather(b);
-
-        finishRotate(node, b);
-    }
-
-    private void finishRotate(AVLNode node, AVLNode b) {
-        if (b.getFather() == null) root = b;
-        else if (b.getFather().getLeft() == node) b.getFather().setLeft(b);
-        else b.getFather().setRight(b);
+        if (p == null) root = b;
+        else if (b.getFather().getLeft() == a) p.setLeft(b);
+        else p.setRight(b);
 
         if (b.getBf() == -1) {
-            node.setBf(0);
+            a.setBf(0);
             b.setBf(0);
         } else {
-            node.setBf(-1);
+            a.setBf(-1);
+            b.setBf(1);
+        }
+    }
+
+    private void leftLeftRotate (AVLNode a) {
+        AVLNode b = a.getLeft();
+        AVLNode p = a.getFather();
+
+        a.setLeft(b.getRight());
+        if (a.getLeft() != null) a.getLeft().setFather(a);
+
+        b.setRight(a);
+        b.setFather(p);
+        a.setFather(b);
+
+        if (b.getFather() == null) root = b;
+        else if (b.getFather().getLeft() == a)p.setLeft(b);
+        else p.setRight(b);
+
+        if (b.getBf() == 1) {
+            a.setBf(0);
+            b.setBf(0);
+        } else {
+            a.setBf(1);
             b.setBf(-1);
         }
     }
 
-    private void rightLeftRotate (AVLNode node) {
-        AVLNode b = node.getRight();
-        AVLNode c = node.getLeft();
+    private void rightLeftRotate (AVLNode a) {
+        AVLNode b = a.getRight();
+        AVLNode c = b.getLeft();
+        AVLNode p = a.getFather();
 
         b.setLeft(c.getRight());
         if (b.getLeft() != null) b.getLeft().setFather(b);
 
-        node.setRight(c.getLeft());
-        if (node.getRight() != null) node.getRight().setFather(node);
+        a.setRight(c.getLeft());
+        if (a.getRight() != null) a.getRight().setFather(a);
 
-        c.setLeft(node);
+        c.setLeft(a);
         c.setRight(b);
-        c.setFather(node.getFather());
-        node.setFather(c);
+        a.setFather(c);
         b.setFather(c);
+        c.setFather(p);
 
-        if (c.getFather() == null) root = c;
-        else if (c.getFather().getLeft() == c) c.getFather().setLeft(c);
-        else c.getFather().setRight(c);
+        if (p == null) root = c;
+        else if (p.getLeft() == a) p.setLeft(c);
+        else p.setRight(c);
 
-        if (c.getBf() == -1) node.setBf(1);
-        else node.setBf(0);
+        if (c.getBf() == -1) a.setBf(1);
+        else a.setBf(0);
 
         if (c.getBf() == 1) b.setBf(-1);
         else b.setBf(0);
@@ -233,28 +274,29 @@ public class AVLTree implements Tree<AVLNode> {
         c.setBf(0);
     }
 
-    private void leftRightRotate (AVLNode node) {
-        AVLNode b = node.getLeft();
-        AVLNode c = node.getRight();
+    private void leftRightRotate (AVLNode a) {
+        AVLNode b = a.getLeft();
+        AVLNode c = b.getRight();
+        AVLNode p = a.getFather();
 
         b.setRight(c.getLeft());
         if (b.getRight() != null) b.getRight().setFather(b);
 
-        node.setLeft(c.getRight());
-        if (node.getLeft() != null) node.getLeft().setFather(node);
+        a.setLeft(c.getRight());
+        if (a.getLeft() != null) a.getLeft().setFather(a);
 
-        c.setRight(node);
+        c.setRight(a);
         c.setLeft(b);
-        c.setFather(node.getFather());
-        node.setFather(c);
+        a.setFather(c);
         b.setFather(c);
+        c.setFather(p);
 
-        if (c.getFather() == null) root = c;
-        else if (c.getFather().getLeft() == c) c.getFather().setLeft(c);
-        else c.getFather().setRight(c);
+        if (p == null) root = c;
+        else if (p.getLeft() == a) p.setLeft(c);
+        else p.setRight(c);
 
-        if (c.getBf() == 1) node.setBf(-1);
-        else node.setBf(0);
+        if (c.getBf() == 1) a.setBf(-1);
+        else a.setBf(0);
 
         if (c.getBf() == -1) b.setBf(1);
         else b.setBf(0);

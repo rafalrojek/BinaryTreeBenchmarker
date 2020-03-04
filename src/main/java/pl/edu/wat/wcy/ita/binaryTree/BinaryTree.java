@@ -1,30 +1,29 @@
 package pl.edu.wat.wcy.ita.binaryTree;
-
 import lombok.Data;
+import lombok.NoArgsConstructor;
 import pl.edu.wat.wcy.ita.Tree.Tree;
-import java.util.LinkedList;
 
 @Data
+@NoArgsConstructor
 public class BinaryTree implements Tree<BinaryNode> {
-    private static LinkedList<BinaryTree> container = new LinkedList<>();
-    private BinaryNode root;
-    private String state;
+    private BinaryNode root = null;
+    private Integer nodeDepth = 0;
 
     @Override
     public BinaryNode findNode (Integer value) {
-        if (root != null) return root.findNode(value);
-        else return null;
+        BinaryNode node = null;
+        if (root != null) node = root.findNode(value);
+        if (node == null || !node.getValue().equals(value)) return null;
+        nodeDepth = root.getNodeDepth(value);
+        return node;
     }
 
-    BinaryTree (String state) {
-       BinaryTree last = container.getLast();
-       if (last != null && last.root != null) this.root = last.getRoot().copy(null);
-       this.state = state;
-        container.addLast(this);
+    public BinaryTree(BinaryTree tree) {
+        if (tree != null && tree.getRoot() != null) this.root = tree.getRoot().copy(null);
     }
 
     @Override
-    public boolean addNode (Integer value) {
+    public void addNode (Integer value) {
         BinaryNode parent = null;
         BinaryNode node = root;
 
@@ -32,7 +31,7 @@ public class BinaryTree implements Tree<BinaryNode> {
             parent = node;
             if (value < node.getValue()) node = node.getLeft();
             else if (value > node.getValue()) node = node.getRight();
-            else return false;
+            else return;
         }
 
         BinaryNode added = new BinaryNode(value);
@@ -41,42 +40,50 @@ public class BinaryTree implements Tree<BinaryNode> {
         if (parent == null) root = added;
         else if (value < parent.getValue()) parent.setLeft(added);
         else parent.setRight(added);
-
-        return true;
+        nodeDepth = root.getNodeDepth(value);
     }
 
     @Override
-    public boolean removeNode (Integer value) {
-        BinaryNode node = findNode(value);
-        if (node == null) return false;
-
-        if (node.getLeft() == null) transplant(node, node.getRight());
-        else if (node.getRight() == null) transplant(node, node.getLeft());
-        else {
-            BinaryNode tmp = getMinimum();
-            if (tmp == null) return false;
-            if (tmp.getFather() != node) {
-                transplant(tmp, tmp.getRight());
-                tmp.setRight(node.getRight());
-                tmp.getRight().setFather(tmp);
-            }
-            transplant(node, tmp);
-            tmp.setLeft(node.getLeft());
-            tmp.getLeft().setFather(tmp);
-        }
-        return true;
+    public Integer getTreeHeight() {
+        if (root == null) return 0;
+        else return getTreeHeight(root);
     }
 
-    private void transplant (BinaryNode node1, BinaryNode node2) {
-        if (node1.getFather() == null) root = node2;
-        else if (node1 == node1.getFather().getLeft()) node1.getFather().setLeft(node2);
-        else node1.getFather().setRight(node2);
-        if (node2 != null) node2.setFather(node1.getFather());
+    @Override
+    public boolean isNull(BinaryNode node) {
+        return node != null;
     }
 
-    private BinaryNode getMinimum() {
-        BinaryNode node = root;
-        while (node.getLeft() != null) node = node.getLeft();
-        return node;
+    @Override
+    public Integer getTreeLeafs() {
+        if (root == null) return 0;
+        else return root.getTreeLeafs();
+    }
+
+    private Integer getTreeHeight(BinaryNode node) {
+        if (node == null) return 0;
+        int lh = getTreeHeight(node.getLeft());
+        int rh = getTreeHeight(node.getRight());
+        return Math.max(lh,rh)+1;
+    }
+
+    @Override
+    public void removeNode (Integer value) {
+        BinaryNode x = findNode(value);
+        if (x == null) return;
+
+        nodeDepth = root.getNodeDepth(value);
+        BinaryNode y, z;
+
+        y = x.getLeft() == null || x.getRight() == null ? x : x.getSuccessor();
+        z = y.getLeft() != null ? y.getLeft() : y.getRight();
+
+        if (z != null) z.setFather(y.getFather());
+
+        if(y.getFather() == null) root = z;
+        else if (y == y.getFather().getLeft()) y.getFather().setLeft(z);
+        else y.getFather().setRight(z);
+
+        if (y != x) x.setValue(y.getValue());
     }
 }

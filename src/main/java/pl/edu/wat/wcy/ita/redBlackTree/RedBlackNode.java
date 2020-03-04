@@ -1,9 +1,9 @@
 package pl.edu.wat.wcy.ita.redBlackTree;
-
 import lombok.Data;
+import pl.edu.wat.wcy.ita.Tree.Node;
 
 @Data
-public class RedBlackNode{
+public class RedBlackNode implements Node {
     private RedBlackNode father;
     private RedBlackNode left;
     private RedBlackNode right;
@@ -12,44 +12,79 @@ public class RedBlackNode{
 
     RedBlackNode (Integer value, Color color) {
         this.value = value;
-        this.father = null;
-        this.left = null;
-        this.right = null;
+        this.father = RedBlackTree.nil;
+        this.left = RedBlackTree.nil;
+        this.right = RedBlackTree.nil;
         this.color = color;
     }
 
+    RedBlackNode () {
+        this.value = null;
+        this.color = Color.Black;
+        this.father = this;
+        this.left = this;
+        this.right = this;
+    }
+
     public RedBlackNode findNode(Integer value) {
-        if (this.getValue().compareTo(value) < 0 && getLeft() != null) return this.getLeft().findNode(value);
-        else if (this.getValue().compareTo(value) > 0 && getRight() != null) return this.getRight().findNode(value);
+        if (this == RedBlackTree.nil) return RedBlackTree.nil;
+        else if (this.getValue().compareTo(value) > 0 && getLeft() != RedBlackTree.nil) return this.getLeft().findNode(value);
+        else if (this.getValue().compareTo(value) < 0 && getRight() != RedBlackTree.nil) return this.getRight().findNode(value);
+        else if (!this.value.equals(value)) return RedBlackTree.nil;
         else return this;
     }
 
-    public RedBlackNode copy (RedBlackNode father) {
+    RedBlackNode copy(RedBlackNode father) {
         RedBlackNode node = new RedBlackNode(this.getValue(),this.getColor());
-        node.setFather(this.getFather());
-        if (this.getLeft() != null) node.setLeft(this.getLeft().copy(node));
-        if (this.getRight() != null) node.setRight(this.getRight().copy(node));
+        if (father != null) node.setFather(father);
+        else node.setFather(RedBlackTree.nil);
+        if (this.getLeft() != RedBlackTree.nil) node.setLeft(this.getLeft().copy(node));
+        if (this.getRight() != RedBlackTree.nil) node.setRight(this.getRight().copy(node));
         return node;
     }
 
-    public RedBlackNode getSuccessor(RedBlackNode nil) {
-        RedBlackNode node;
-        RedBlackNode tmp = this;
+    private RedBlackNode getMinimum () {
+        RedBlackNode p = this;
 
-        if (this != nil) {
-            if (this.getRight() != nil) {
-                node = this.getRight();
-                while (node.getLeft() != nil) node = node.getLeft();
+        if (p != RedBlackTree.nil) while (p.getLeft() != RedBlackTree.nil) p = p.getLeft();
+        return p;
+    }
+
+    RedBlackNode getSuccessor() {
+        RedBlackNode p = this;
+        RedBlackNode r;
+
+        if (p == RedBlackTree.nil) return RedBlackTree.nil;
+        else if (p.getRight() != RedBlackTree.nil) return p.getRight().getMinimum();
+        else {
+            r = p.getFather();
+            while ((r != RedBlackTree.nil) && (p == r.getRight())) {
+                p = r;
+                r = r.getFather();
             }
-            else {
-                node = this.getFather();
-                while (node != nil && tmp == node.getRight()) {
-                    tmp = node;
-                    node = node.getFather();
-                }
-            }
-            return node;
+            return r;
         }
-        return nil;
+    }
+
+    Integer getNodeDepth(Integer value) {
+        if (this == RedBlackTree.nil) return 0;
+        else if (this.value.compareTo(value) > 0 && getLeft() != RedBlackTree.nil) return 1+getLeft().getNodeDepth(value);
+        else if (this.value.compareTo(value) < 0 && getRight() != RedBlackTree.nil) return 1+getRight().getNodeDepth(value);
+        else return 1;
+    }
+
+    public Integer getTreeLeafs() {
+        if (this.left == RedBlackTree.nil && this.right == RedBlackTree.nil) return 1;
+        int leafs = 0;
+        if (getLeft() != RedBlackTree.nil) leafs += getLeft().getTreeLeafs();
+        if (getRight() != RedBlackTree.nil) leafs += getRight().getTreeLeafs();
+        return leafs;
+    }
+
+    @Override
+    public String toString() {
+        return "RedBlackNode{" +
+                "value=" + value +
+                '}';
     }
 }

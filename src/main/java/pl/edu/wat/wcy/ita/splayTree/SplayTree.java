@@ -1,20 +1,25 @@
 package pl.edu.wat.wcy.ita.splayTree;
+import lombok.Data;
+import lombok.NoArgsConstructor;
 import pl.edu.wat.wcy.ita.Tree.Tree;
-import java.util.LinkedList;
 
+@Data
+@NoArgsConstructor
 public class SplayTree implements Tree<SplayNode> {
-    private static LinkedList<SplayTree> container = new LinkedList<>();
-    private SplayNode root;
+    private SplayNode root = null;
+    private Integer nodeDepth = 0;
+
+    public SplayTree(SplayTree tree) {
+        if (tree != null && tree.getRoot() != null) this.root = tree.getRoot().copy(null);
+    }
 
     @Override
-    public boolean addNode(Integer value) {
-        SplayNode node = splay(value);
+    public void addNode(Integer value) {
+        SplayNode node = splay(value, true);
         SplayNode newNode = new SplayNode(value);
         if (node == null) this.root = newNode;
-        else if (node.getValue().compareTo(value)< 0) adAsLeftRoot(newNode,newNode);
+        else if (node.getValue().compareTo(value)< 0) adAsLeftRoot(newNode,node);
         else if (node.getValue().compareTo(value)>0) adAsRightRoot(newNode,node);
-        else return false;
-        return true;
     }
 
     private void adAsRightRoot(SplayNode newNode, SplayNode root) {
@@ -38,32 +43,72 @@ public class SplayTree implements Tree<SplayNode> {
     }
 
     @Override
-    public boolean removeNode(Integer value) {
-        SplayNode node = splay(value);
-        if (node == null || !node.getValue().equals(value)) return false;
+    public void removeNode(Integer value) {
+        if (root == null) return;
+        SplayNode tl, tr;
 
-        if (node.getLeft() != null) {
-            SplayNode right = node.getRight();
-            this.root = node.getLeft();
-            node.setFather(null);
-            splay(Integer.MAX_VALUE);
-            node.setRight(right);
-            if (right != null) right.setFather(node);
+        splay(value, true);
+        if (!root.getValue().equals(value)) return;
+        tl = root.getLeft();
+        tr = root.getRight();
+
+        if(tl != null) {
+            tl.setFather(null);
+            if (tr != null) tr.setFather(null);
+            root = tl;
+            splay(value, false);
+            while (root.getRight() != null) rotateLeft(root);
+            root.setRight(tr);
+            if (tr != null) tr.setFather(root);
         }
-        else {
-            this.root = node.getRight();
-            this.root.setFather(null);
+        else if (tr != null) {
+            tr.setFather(null);
+            root = tr;
+            splay(value, false);
+            while (root.getLeft() != null) rotateRight(root);
+            root.setLeft(null);
         }
-        return true;
+        else root = null;
+
     }
 
     @Override
     public SplayNode findNode(Integer value) {
-        if (root != null) return root.findNode(value);
-        else return null;
+        if (root == null) return null;
+        else {
+            splay(value,true);
+            if (root.getValue().equals(value)) return root;
+            else return null;
+        }
     }
 
-    private SplayNode splay (Integer key) {
+    @Override
+    public Integer getTreeHeight() {
+        if (root == null) return 0;
+        else return getTreeHeight(root);
+    }
+
+    @Override
+    public boolean isNull(SplayNode node) {
+        return node != null;
+    }
+
+    @Override
+    public Integer getTreeLeafs() {
+        if (root == null) return 0;
+        else return root.getTreeLeafs();
+    }
+
+
+
+    private Integer getTreeHeight(SplayNode node) {
+        if (node == null) return 0;
+        int lh = getTreeHeight(node.getLeft());
+        int rh = getTreeHeight(node.getRight());
+        return Math.max(lh,rh)+1;
+    }
+
+    private SplayNode splay (Integer key, boolean countDepth) {
         SplayNode x = this.root, tmp = null;
 
         if (x == null) return null;
@@ -75,9 +120,12 @@ public class SplayTree implements Tree<SplayNode> {
         } while (x != null);
 
         if (x == null) x = tmp;
+        if(countDepth)
+            nodeDepth = root.getNodeDepth(x.getValue());
+
 
         while (x.getFather() != null) {
-            if (x.getFather().getFather() != null) {
+            if (x.getFather().getFather() == null) {
                 zig(x);
                 return root;
             }
