@@ -1,15 +1,11 @@
 package pl.edu.wat.wcy.ita.gui;
 import javafx.collections.ObservableList;
 import javafx.concurrent.Task;
-import javafx.concurrent.WorkerStateEvent;
-import javafx.event.EventHandler;
 import javafx.geometry.Pos;
-import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.canvas.Canvas;
 import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.control.*;
-import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
 import javafx.scene.text.Font;
@@ -19,7 +15,6 @@ import javafx.stage.Modality;
 import javafx.stage.Stage;
 import javafx.stage.StageStyle;
 import pl.edu.wat.wcy.ita.Tree.*;
-
 import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileWriter;
@@ -30,11 +25,35 @@ import java.util.Random;
 public class Controller {
     private static double scale = 1;
     private static double delta = 0.1;
+    private Stage stage;
+    private static Scale scaleTransform = new Scale(scale, scale, 0, 0);
+    private SettingsSingleton settings = SettingsSingleton.getSingleton();
     public TextField findProbability;
     public TextField removeProbability;
     public TextField addProbability;
-    private Stage stage;
-    private static Scale scaleTransform = new Scale(scale, scale, 0, 0);
+    public TableColumn depthColumn;
+    public TableColumn BSTDepthColumn;
+    public TableColumn AVLDepthColumn;
+    public TableColumn RBDepthColumn;
+    public TableColumn splayDepthColumn;
+    public TableColumn heightColumn;
+    public TableColumn BSTHeightColumn;
+    public TableColumn AVLHeightColumn;
+    public TableColumn RBHeightColumn;
+    public TableColumn SplayHeightColumn;
+    public TableColumn leafsColumn;
+    public TableColumn BSTLeafsColumn;
+    public TableColumn AVLLeafsColumn;
+    public TableColumn RBLeafsColumn;
+    public TableColumn SplayLeafsColumn;
+    public TableColumn rotateColumn;
+    public TableColumn AVLRotateColumn;
+    public TableColumn RBRotateColumn;
+    public TableColumn SplayRotateColumn;
+    public Tab BSTTab;
+    public Tab AVLTab;
+    public Tab RBTab;
+    public Tab SplayTab;
     public TextArea numberArea;
     public TableView<Entry> table;
     public ScrollPane bstPane;
@@ -66,7 +85,7 @@ public class Controller {
             return;
         }
         int i = Integer.parseInt(randomSize.getText());
-        while (list.size() <= i) {
+        while (list.size() < i) {
             int rnd = random.nextInt(10000);
             if(!list.contains(rnd)) {
                 list.add(rnd);
@@ -86,24 +105,24 @@ public class Controller {
             return;
         }
         if (treeContainer.countNodes() < 300) {
-            bstPane.setContent(getTree(treeContainer.getTree(TreeType.BST)));
-            rbPane.setContent(getTree(treeContainer.getTree(TreeType.RB)));
-            avlPane.setContent(getTree(treeContainer.getTree(TreeType.AVL)));
-            splayPane.setContent(getTree(treeContainer.getTree(TreeType.SPLAY)));
+            String label = treeContainer.getComment();
+            if (settings.isBST()) {
+                bstPane.setContent(getTree(treeContainer.getTree(TreeType.BST)));
+                operationBstLabel.setText(label);
+            }
+            if (settings.isRB()) {
+                rbPane.setContent(getTree(treeContainer.getTree(TreeType.RB)));
+                operationRbLabel.setText(label);
+            }
+            if (settings.isAVL()) {
+                avlPane.setContent(getTree(treeContainer.getTree(TreeType.AVL)));
+                operationAvlLabel.setText(label);
+            }
+            if (settings.isSPLAY()) {
+                splayPane.setContent(getTree(treeContainer.getTree(TreeType.SPLAY)));
+                operationSplayLabel.setText(label);
+            }
         }
-        else {
-            Label label = new Label("W drzewie znajduje się za dużo węzłów. Drzewo nie zostanie wygenerowane");
-            bstPane.setContent(label);
-            rbPane.setContent(label);
-            avlPane.setContent(label);
-            splayPane.setContent(label);
-
-        }
-        String label = treeContainer.getComment();
-        operationSplayLabel.setText(label);
-        operationBstLabel.setText(label);
-        operationAvlLabel.setText(label);
-        operationRbLabel.setText(label);
     }
 
     private Canvas getTree (Tree tree) {
@@ -124,8 +143,7 @@ public class Controller {
         gc.setStroke(Color.BLUE);
         gc.setLineWidth(2);
 
-        if (tree.isNull(tree.getRoot()))
-            drawNode(gc,tree, tree.getRoot(), width/2.0, 10, width/2.0 -10);
+        if (tree.isNull(tree.getRoot())) drawNode(gc,tree, tree.getRoot(), width/2.0, 10, width/2.0 -10);
 
         return canvas;
     }
@@ -190,7 +208,7 @@ public class Controller {
                 return null;
             }
         };
-        createProgressBar(yourTaskName, last);
+        createProgressBar(yourTaskName);
     }
 
     private void wrongNumberAlert(String number) {
@@ -217,7 +235,6 @@ public class Controller {
             alert.showAndWait();
             return;
         }
-        final TreeContainer[] last = {null};
         Task<Void> yourTaskName = new Task<Void>() {
             @Override
             public Void call() {
@@ -237,17 +254,16 @@ public class Controller {
                     else treeContainer = new TreeContainer(OperationType.FIND, n);
 
                     data.addAll(new Entry(treeContainer));
-                    if (treeContainer.countNodes() < 300) last[0] = treeContainer;
                     updateProgress(i++, numbers.length);
                     updateMessage(treeContainer.getComment());
                 }
                 return null;
             }
         };
-        createProgressBar(yourTaskName, last);
+        createProgressBar(yourTaskName);
     }
 
-    private void createProgressBar(Task<Void> yourTaskName, TreeContainer[] last) {
+    private void createProgressBar(Task<Void> yourTaskName) {
         ProgressBar pBar = new ProgressBar();
         pBar.progressProperty().bind(yourTaskName.progressProperty());
         Label statusLabel = new Label("Proszę czekać...");
@@ -265,14 +281,14 @@ public class Controller {
         newWindow.show();
         yourTaskName.setOnSucceeded(event -> {
             newWindow.close();
-            setTree(last[0]);
+            setTree(TreeContainer.getLast());
         });
         Thread loadingThread = new Thread(yourTaskName);
         loadingThread.start();
     }
 
     public void saveCsvButton() throws IOException {
-        StringBuilder stringBuilder = new StringBuilder(Entry.Names);
+        StringBuilder stringBuilder = new StringBuilder(Entry.getNames());
         stringBuilder.append("\n");
         for (Entry e: table.getItems())
             stringBuilder.append(e).append("\n");
@@ -294,5 +310,29 @@ public class Controller {
 
     public void setStageAndSetupListeners(Stage stage) {
         this.stage = stage;
+        SettingsSingleton settings = SettingsSingleton.getSingleton();
+        depthColumn.setVisible(settings.isDepth());
+        BSTDepthColumn.setVisible(settings.isBST() && settings.isDepth());
+        AVLDepthColumn.setVisible(settings.isAVL() && settings.isDepth());
+        RBDepthColumn.setVisible(settings.isRB() && settings.isDepth());
+        splayDepthColumn.setVisible(settings.isSPLAY() && settings.isDepth());
+        heightColumn.setVisible(settings.isHeight());
+        BSTHeightColumn.setVisible(settings.isBST() && settings.isHeight());
+        AVLHeightColumn.setVisible(settings.isAVL() && settings.isHeight());
+        RBHeightColumn.setVisible(settings.isRB() && settings.isHeight());
+        SplayHeightColumn.setVisible(settings.isSPLAY() && settings.isHeight());
+        leafsColumn.setVisible(settings.isLeafs());
+        BSTLeafsColumn.setVisible(settings.isBST() && settings.isLeafs());
+        AVLLeafsColumn.setVisible(settings.isAVL() && settings.isLeafs());
+        RBLeafsColumn.setVisible(settings.isRB() && settings.isLeafs());
+        SplayLeafsColumn.setVisible(settings.isSPLAY() && settings.isLeafs());
+        rotateColumn.setVisible(settings.isRotates());
+        AVLRotateColumn.setVisible(settings.isAVL() && settings.isRotates());
+        RBRotateColumn.setVisible(settings.isRB() && settings.isRotates());
+        SplayRotateColumn.setVisible(settings.isSPLAY() && settings.isRotates());
+        BSTTab.setDisable(!settings.isBST());
+        AVLTab.setDisable(!settings.isAVL());
+        RBTab.setDisable(!settings.isRB());
+        SplayTab.setDisable(!settings.isSPLAY());
     }
 }

@@ -8,6 +8,7 @@ import pl.edu.wat.wcy.ita.Tree.Tree;
 public class SplayTree implements Tree<SplayNode> {
     private SplayNode root = null;
     private Integer nodeDepth = 0;
+    private Integer rotates = 0;
 
     public SplayTree(SplayTree tree) {
         if (tree != null && tree.getRoot() != null) this.root = tree.getRoot().copy(null);
@@ -69,7 +70,6 @@ public class SplayTree implements Tree<SplayNode> {
             root.setLeft(null);
         }
         else root = null;
-
     }
 
     @Override
@@ -99,8 +99,6 @@ public class SplayTree implements Tree<SplayNode> {
         else return root.getTreeLeafs();
     }
 
-
-
     private Integer getTreeHeight(SplayNode node) {
         if (node == null) return 0;
         int lh = getTreeHeight(node.getLeft());
@@ -120,9 +118,7 @@ public class SplayTree implements Tree<SplayNode> {
         } while (x != null);
 
         if (x == null) x = tmp;
-        if(countDepth)
-            nodeDepth = root.getNodeDepth(x.getValue());
-
+        if(countDepth) nodeDepth = root.getNodeDepth(x.getValue());
 
         while (x.getFather() != null) {
             if (x.getFather().getFather() == null) {
@@ -173,6 +169,7 @@ public class SplayTree implements Tree<SplayNode> {
     }
 
     private void rotateRight (SplayNode a){
+        rotates++;
         SplayNode b = a.getLeft(), p = a.getFather();
         if (b != null) {
             a.setLeft(b.getRight());
@@ -183,6 +180,7 @@ public class SplayTree implements Tree<SplayNode> {
     }
 
     private void rotateSetFather(SplayNode a, SplayNode b, SplayNode p) {
+        rotates++;
         b.setFather(p);
         a.setFather(b);
         if (p == null) root = b;

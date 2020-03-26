@@ -1,0 +1,110 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.*?>
+<?import javafx.scene.text.*?>
+<?import java.lang.*?>
+<?import java.util.*?>
+<?import javafx.scene.*?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+
+<BorderPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="400.0" prefWidth="600.0" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1"
+fx:controller="pl.edu.wat.wcy.ita.gui.WelcomeController">
+   <top>
+      <Label text="Tester drzew binarnych" BorderPane.alignment="CENTER">
+         <font>
+            <Font size="36.0" />
+         </font>
+         <BorderPane.margin>
+            <Insets bottom="20.0" left="30.0" right="30.0" top="30.0" />
+         </BorderPane.margin>
+      </Label>
+   </top>
+   <left>
+      <VBox prefHeight="200.0" prefWidth="200.0" BorderPane.alignment="CENTER">
+         <children>
+            <Label alignment="CENTER" contentDisplay="CENTER" prefHeight="17.0" prefWidth="191.0" text="Typy drzew">
+               <VBox.margin>
+                  <Insets bottom="10.0" left="10.0" right="10.0" top="10.0" />
+               </VBox.margin>
+               <font>
+                  <Font size="14.0" />
+               </font>
+            </Label>
+            <CheckBox mnemonicParsing="false"  fx:id="bst" selected="true" text="Drzewo BST" onAction="#bstSelect">
+               <VBox.margin>
+                  <Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />
+               </VBox.margin>
+            </CheckBox>
+            <CheckBox mnemonicParsing="false"  fx:id="avl" selected="true" text="Drzewo AVL">
+               <VBox.margin>
+                  <Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />
+               </VBox.margin>
+            </CheckBox>
+            <CheckBox mnemonicParsing="false"  fx:id="rb" selected="true" text="Drzewo Czerwono-czarne">
+               <VBox.margin>
+                  <Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />
+               </VBox.margin>
+            </CheckBox>
+            <CheckBox mnemonicParsing="false"  fx:id="splay" selected="true" text="Drzewo Splay">
+               <VBox.margin>
+                  <Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />
+               </VBox.margin>
+            </CheckBox>
+         </children>
+         <BorderPane.margin>
+            <Insets bottom="10.0" left="10.0" right="10.0" top="10.0" />
+         </BorderPane.margin>
+         <padding>
+            <Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />
+         </padding>
+      </VBox>
+   </left>
+   <right>
+       <VBox prefHeight="200.0" prefWidth="200.0" BorderPane.alignment="CENTER">
+           <children>
+               <Label alignment="CENTER" contentDisplay="CENTER" prefHeight="17.0" prefWidth="191.0" text="Statystyki">
+                   <VBox.margin>
+                       <Insets bottom="10.0" left="10.0" right="10.0" top="10.0" />
+                   </VBox.margin>
+                   <font>
+                       <Font size="14.0" />
+                   </font>
+               </Label>
+               <CheckBox mnemonicParsing="false"  fx:id="depth" selected="true" text="Głębokość węzła">
+                   <VBox.margin>
+                       <Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />
+                   </VBox.margin>
+               </CheckBox>
+               <CheckBox mnemonicParsing="false"  fx:id="height" selected="true" text="Wysokość drzewa">
+                   <VBox.margin>
+                       <Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />
+                   </VBox.margin>
+               </CheckBox>
+               <CheckBox mnemonicParsing="false"  fx:id="leafs" selected="true" text="Ilość liści">
+                   <VBox.margin>
+                       <Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />
+                   </VBox.margin>
+               </CheckBox>
+               <CheckBox fx:id="rotates" disable="true" mnemonicParsing="false" text="Ilość rotacji">
+                   <VBox.margin>
+                       <Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />
+                   </VBox.margin>
+               </CheckBox>
+           </children>
+           <BorderPane.margin>
+               <Insets bottom="10.0" left="10.0" right="10.0" top="10.0" />
+           </BorderPane.margin>
+           <padding>
+               <Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />
+           </padding>
+       </VBox>
+   </right>
+   <bottom>
+      <Button mnemonicParsing="false" prefHeight="25.0" prefWidth="169.0" text="Uruchom program" BorderPane.alignment="CENTER" onAction="#button">
+         <BorderPane.margin>
+            <Insets bottom="20.0" left="20.0" right="20.0" top="20.0" />
+         </BorderPane.margin>
+      </Button>
+   </bottom>
+</BorderPane>

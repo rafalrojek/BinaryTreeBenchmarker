@@ -1,7 +1,6 @@
 package pl.edu.wat.wcy.ita.splayTree;
 import lombok.Data;
 import pl.edu.wat.wcy.ita.Tree.Node;
-import pl.edu.wat.wcy.ita.redBlackTree.RedBlackNode;
 
 @Data
 public class SplayNode implements Node {
@@ -19,20 +18,12 @@ public class SplayNode implements Node {
         this.right = null;
     }
 
-    public SplayNode findNode(Integer value) {
-        if (this.getValue().compareTo(value) > 0 && getLeft() != null) return this.getLeft().findNode(value);
-        else if (this.getValue().compareTo(value) < 0 && getRight() != null) return this.getRight().findNode(value);
-        else return this;
-    }
-
     @Override
     public String toString() {
         return "SplayNode{" +
                 "value=" + value +
                 '}';
     }
-
-
 
     SplayNode copy(SplayNode father) {
         SplayNode node = new SplayNode(this.getValue());

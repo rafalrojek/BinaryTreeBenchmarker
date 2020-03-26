@@ -8,6 +8,7 @@ import pl.edu.wat.wcy.ita.Tree.Tree;
 public class AVLTree implements Tree<AVLNode> {
     private AVLNode root = null;
     private Integer nodeDepth = 0;
+    private Integer rotates = 0;
 
     public AVLTree (AVLTree tree) {
         if (tree != null && tree.getRoot() != null) this.root = tree.getRoot().copy(null);
@@ -197,6 +198,7 @@ public class AVLTree implements Tree<AVLNode> {
     }
 
     private void rightRightRotate (AVLNode a) {
+        rotates++;
         AVLNode b = a.getRight();
         AVLNode p = a.getFather();
 
@@ -221,6 +223,7 @@ public class AVLTree implements Tree<AVLNode> {
     }
 
     private void leftLeftRotate (AVLNode a) {
+        rotates++;
         AVLNode b = a.getLeft();
         AVLNode p = a.getFather();
 
@@ -245,6 +248,7 @@ public class AVLTree implements Tree<AVLNode> {
     }
 
     private void rightLeftRotate (AVLNode a) {
+        rotates++;
         AVLNode b = a.getRight();
         AVLNode c = b.getLeft();
         AVLNode p = a.getFather();
@@ -275,6 +279,7 @@ public class AVLTree implements Tree<AVLNode> {
     }
 
     private void leftRightRotate (AVLNode a) {
+        rotates++;
         AVLNode b = a.getLeft();
         AVLNode c = b.getRight();
         AVLNode p = a.getFather();

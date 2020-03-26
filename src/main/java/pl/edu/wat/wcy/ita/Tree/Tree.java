@@ -9,4 +9,5 @@ public interface Tree<T> {
     Integer getNodeDepth();
     boolean isNull (T node);
     Integer getTreeLeafs();
+    Integer getRotates();
 }

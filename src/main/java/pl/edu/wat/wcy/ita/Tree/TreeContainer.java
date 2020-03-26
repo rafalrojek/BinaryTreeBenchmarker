@@ -1,8 +1,8 @@
 package pl.edu.wat.wcy.ita.Tree;
 import lombok.Data;
 import pl.edu.wat.wcy.ita.avlTree.AVLTree;
-import pl.edu.wat.wcy.ita.binaryTree.BinaryNode;
 import pl.edu.wat.wcy.ita.binaryTree.BinaryTree;
+import pl.edu.wat.wcy.ita.gui.SettingsSingleton;
 import pl.edu.wat.wcy.ita.redBlackTree.RedBlackTree;
 import pl.edu.wat.wcy.ita.splayTree.SplayTree;
 import java.util.HashMap;
@@ -14,21 +14,23 @@ public class TreeContainer {
     private static LinkedList<TreeContainer> container = new LinkedList<>();
     private final Map<TreeType,Tree> trees;
     private static Integer current = 0;
+    private static Integer counter = 1;
     private String comment;
+    private SettingsSingleton settings = SettingsSingleton.getSingleton();
 
     public TreeContainer(OperationType operationType, int number) {
         trees = new HashMap<>();
         if (container.isEmpty()) {
-            trees.put(TreeType.AVL, new AVLTree());
-            trees.put(TreeType.BST, new BinaryTree());
-            trees.put(TreeType.RB, new RedBlackTree());
-            trees.put(TreeType.SPLAY, new SplayTree());
+            if (settings.isAVL()) trees.put(TreeType.AVL, new AVLTree());
+            if (settings.isBST()) trees.put(TreeType.BST, new BinaryTree());
+            if (settings.isRB()) trees.put(TreeType.RB, new RedBlackTree());
+            if (settings.isSPLAY()) trees.put(TreeType.SPLAY, new SplayTree());
         } else {
             Map<TreeType, Tree> prev = container.getLast().trees;
-            trees.put(TreeType.AVL, new AVLTree((AVLTree) prev.get(TreeType.AVL)));
-            trees.put(TreeType.BST, new BinaryTree((BinaryTree) prev.get(TreeType.BST)));
-            trees.put(TreeType.RB, new RedBlackTree((RedBlackTree) prev.get(TreeType.RB)));
-            trees.put(TreeType.SPLAY, new SplayTree((SplayTree) prev.get(TreeType.SPLAY)));
+            if (settings.isAVL()) trees.put(TreeType.AVL, new AVLTree((AVLTree) prev.get(TreeType.AVL)));
+            if (settings.isBST()) trees.put(TreeType.BST, new BinaryTree((BinaryTree) prev.get(TreeType.BST)));
+            if (settings.isRB()) trees.put(TreeType.RB, new RedBlackTree((RedBlackTree) prev.get(TreeType.RB)));
+            if (settings.isSPLAY()) trees.put(TreeType.SPLAY, new SplayTree((SplayTree) prev.get(TreeType.SPLAY)));
         }
         if(operationType == OperationType.ADD) {
             comment = "Dodanie " + number;
@@ -40,8 +42,10 @@ public class TreeContainer {
             comment = "Wyszukanie " + number;
             trees.forEach(((treeType, tree) -> tree.findNode(number)));
         }
+
+        if (!container.isEmpty() && container.getLast().countNodes() > 300)
+            container.removeLast();
         container.add(this);
-        current = container.size()-1;
     }
 
     public Tree getTree(TreeType treeType) {
@@ -49,12 +53,15 @@ public class TreeContainer {
     }
 
     public int countNodes () {
-        BinaryTree binaryTree = (BinaryTree) trees.get(TreeType.BST);
-        if (binaryTree.getRoot()!= null) return countNodes(binaryTree.getRoot());
+        Tree tree = null;
+        if (settings.isAVL()) tree = trees.get(TreeType.AVL);
+        else if (settings.isBST()) tree = trees.get(TreeType.BST);
+        else tree = trees.get(TreeType.SPLAY);
+        if (tree != null && tree.getRoot()!= null) return countNodes(tree.getRoot());
         else return 0;
     }
 
-    private int countNodes (BinaryNode node) {
+    private int countNodes (Node node) {
         int sum = 1;
         if (node.getLeft() != null) sum += countNodes(node.getLeft());
         if (node.getRight() != null) sum += countNodes(node.getRight());
@@ -62,7 +69,7 @@ public class TreeContainer {
     }
 
     public int getLP () {
-        return container.size();
+        return counter++;
     }
 
     public static TreeContainer getPrev () {
@@ -81,5 +88,10 @@ public class TreeContainer {
             return container.get(current);
         }
         else return null;
+    }
+
+    public static TreeContainer getLast() {
+        current = container.size() -1;
+        return container.getLast();
     }
 }

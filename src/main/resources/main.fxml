@@ -1,271 +1,310 @@
 <?xml version="1.0" encoding="UTF-8"?>
+
+<?import java.lang.*?>
 <?import javafx.scene.control.cell.*?>
 <?import javafx.geometry.*?>
 <?import javafx.scene.control.*?>
 <?import javafx.scene.layout.*?>
 
-<TabPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="900.0"
-         prefWidth="1600.0" tabClosingPolicy="UNAVAILABLE" xmlns="http://javafx.com/javafx/8"
-         xmlns:fx="http://javafx.com/fxml/1" fx:controller="pl.edu.wat.wcy.ita.gui.Controller">
-    <Tab text="Zarządanie">
-        <GridPane>
-            <columnConstraints>
-                <ColumnConstraints hgrow="SOMETIMES" maxWidth="1398.0" minWidth="10.0" prefWidth="1321.0"/>
-                <ColumnConstraints hgrow="SOMETIMES" maxWidth="795.0" minWidth="10.0" prefWidth="279.0"/>
-            </columnConstraints>
-            <rowConstraints>
-                <RowConstraints maxHeight="596.0" minHeight="10.0" prefHeight="473.0" vgrow="SOMETIMES"/>
-                <RowConstraints maxHeight="279.0" minHeight="0.0" prefHeight="246.0" vgrow="SOMETIMES"/>
-                <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES"/>
-            </rowConstraints>
-            <VBox alignment="CENTER" prefHeight="200.0" prefWidth="100.0" GridPane.columnIndex="1"
-                  GridPane.rowIndex="1" GridPane.rowSpan="2147483647">
-                <opaqueInsets>
-                    <Insets bottom="5.0" left="5.0" right="5.0" top="5.0"/>
-                </opaqueInsets>
-                <TextField fx:id="randomSize" alignment="CENTER" prefWidth="200.0"
-                           promptText="Ilość liczb do wylosowania" VBox.vgrow="ALWAYS">
-                    <VBox.margin>
-                        <Insets bottom="5.0" left="5.0" right="5.0" top="5.0"/>
-                    </VBox.margin>
-                </TextField>
-                <Button mnemonicParsing="false" onAction="#addNumbers" prefWidth="1000.0"
-                        text="Wylosuj liczby">
-                    <VBox.margin>
-                        <Insets bottom="5.0" left="5.0" right="5.0" top="5.0"/>
-                    </VBox.margin>
-                </Button>
-                <Button alignment="CENTER" mnemonicParsing="false" onAction="#addNodesButton"
-                        prefWidth="1000.0" text="Dodaj" textAlignment="CENTER">
-                    <VBox.margin>
-                        <Insets bottom="5.0" left="5.0" right="5.0" top="5.0"/>
-                    </VBox.margin>
-                </Button>
-                <Button mnemonicParsing="false" prefWidth="1000.0" text="Wyszukaj">
-                    <VBox.margin>
-                        <Insets bottom="5.0" left="5.0" right="5.0" top="5.0"/>
-                    </VBox.margin>
-                </Button>
-                <Button mnemonicParsing="false" onAction="#removeNodesButton" prefWidth="1000.0" text="Usuń">
-                    <VBox.margin>
-                        <Insets bottom="5.0" left="5.0" right="5.0" top="5.0"/>
-                    </VBox.margin>
-                </Button>
-                <TextField fx:id="addProbability" promptText="Prawdopodobieństwo dodania">
-                    <VBox.margin>
-                        <Insets bottom="5.0" left="5.0" right="5.0" top="5.0"/>
-                    </VBox.margin>
-                </TextField>
-                <TextField fx:id="removeProbability" promptText="Prawdopodobieństwo usunięcia">
-                    <VBox.margin>
-                        <Insets bottom="5.0" left="5.0" right="5.0" top="5.0"/>
-                    </VBox.margin>
-                </TextField>
-                <TextField fx:id="findProbability" promptText="Prawdopodobieństwo wyszukania">
-                    <VBox.margin>
-                        <Insets bottom="5.0" left="5.0" right="5.0" top="5.0"/>
-                    </VBox.margin>
-                </TextField>
-                <Button mnemonicParsing="false" onAction="#randomNodesButton" prefWidth="1000.0"
-                        text="Operacje losowe">
-                    <VBox.margin>
-                        <Insets bottom="5.0" left="5.0" right="5.0" top="5.0"/>
-                    </VBox.margin>
-                </Button>
-                <Button mnemonicParsing="false" onAction="#saveCsvButton" prefWidth="1000.0"
-                        text="Zapisz do pliku csv">
-                    <VBox.margin>
-                        <Insets bottom="5.0" left="5.0" right="5.0" top="5.0"/>
-                    </VBox.margin>
-                </Button>
-            </VBox>
-            <TextArea fx:id="numberArea" prefHeight="200.0" prefWidth="200.0"
-                      promptText="Podaj wartości do operacji" GridPane.columnIndex="1">
-                <GridPane.margin>
-                    <Insets bottom="5.0" left="5.0" right="5.0" top="5.0"/>
-                </GridPane.margin>
-            </TextArea>
-            <TableView fx:id="table" prefHeight="200.0" prefWidth="200.0" GridPane.rowSpan="2147483647">
-                <columns>
-                    <TableColumn editable="false" prefWidth="15.0" text="Lp.">
-                        <cellValueFactory>
-                            <PropertyValueFactory property="lp"/>
-                        </cellValueFactory>
-                    </TableColumn>
-                    <TableColumn editable="false" sortable="false" text="Operacja" minWidth="50">
-                        <cellValueFactory>
-                            <PropertyValueFactory property="operation"/>
-                        </cellValueFactory>
-                    </TableColumn>
-                    <TableColumn editable="false" text="Liczba elementów">
-                        <cellValueFactory>
-                            <PropertyValueFactory property="numberOfNodes"/>
-                        </cellValueFactory>
-                    </TableColumn>
-                    <TableColumn editable="false" sortable="false" text="Głebokość węzła">
-                        <columns>
-                            <TableColumn editable="false" sortable="false" text="BST">
-                                <cellValueFactory>
-                                    <PropertyValueFactory property="bstDepth"/>
-                                </cellValueFactory>
-                            </TableColumn>
-                            <TableColumn editable="false" sortable="false" text="AVL">
-                                <cellValueFactory>
-                                    <PropertyValueFactory property="avlDepth"/>
-                                </cellValueFactory>
-                            </TableColumn>
-                            <TableColumn editable="false" sortable="false" text="RB">
-                                <cellValueFactory>
-                                    <PropertyValueFactory property="rbDepth"/>
-                                </cellValueFactory>
-                            </TableColumn>
-                            <TableColumn editable="false" sortable="false" text="Splay">
-                                <cellValueFactory>
-                                    <PropertyValueFactory property="splayDepth"/>
-                                </cellValueFactory>
-                            </TableColumn>
-                        </columns>
-                    </TableColumn>
-                    <TableColumn editable="false" sortable="false" text="Wysokość drzewa">
-                        <columns>
-                            <TableColumn editable="false" sortable="false" text="BST">
-                                <cellValueFactory>
-                                    <PropertyValueFactory property="bstHeight"/>
-                                </cellValueFactory>
-                            </TableColumn>
-                            <TableColumn editable="false" sortable="false" text="AVL">
-                                <cellValueFactory>
-                                    <PropertyValueFactory property="avlHeight"/>
-                                </cellValueFactory>
-                            </TableColumn>
-                            <TableColumn editable="false" sortable="false" text="RB">
-                                <cellValueFactory>
-                                    <PropertyValueFactory property="rbHeight"/>
-                                </cellValueFactory>
-                            </TableColumn>
-                            <TableColumn editable="false" sortable="false" text="Splay">
-                                <cellValueFactory>
-                                    <PropertyValueFactory property="splayHeight"/>
-                                </cellValueFactory>
-                            </TableColumn>
-                        </columns>
-                    </TableColumn>
-                    <TableColumn editable="false" sortable="false" text="Liczba liści">
-                        <columns>
-                            <TableColumn editable="false" sortable="false" text="BST">
-                                <cellValueFactory>
-                                    <PropertyValueFactory property="bstLeafs"/>
-                                </cellValueFactory>
-                            </TableColumn>
-                            <TableColumn editable="false" sortable="false" text="AVL">
-                                <cellValueFactory>
-                                    <PropertyValueFactory property="avlLeafs"/>
-                                </cellValueFactory>
-                            </TableColumn>
-                            <TableColumn editable="false" sortable="false" text="RB">
-                                <cellValueFactory>
-                                    <PropertyValueFactory property="rbLeafs"/>
-                                </cellValueFactory>
-                            </TableColumn>
-                            <TableColumn editable="false" sortable="false" text="Splay">
-                                <cellValueFactory>
-                                    <PropertyValueFactory property="splayLeafs"/>
-                                </cellValueFactory>
-                            </TableColumn>
-                        </columns>
-                    </TableColumn>
-                </columns>
-                <columnResizePolicy>
-                    <TableView fx:constant="CONSTRAINED_RESIZE_POLICY"/>
-                </columnResizePolicy>
-                <GridPane.margin>
-                    <Insets bottom="5.0" left="5.0" right="5.0" top="5.0"/>
-                </GridPane.margin>
-            </TableView>
-        </GridPane>
-    </Tab>
-    <Tab text="Drzewo BST">
-        <BorderPane prefHeight="200.0" prefWidth="200.0">
-            <center>
-                <ScrollPane fx:id="bstPane" BorderPane.alignment="CENTER"/>
-            </center>
-            <bottom>
-                <HBox alignment="CENTER" prefHeight="50.0" prefWidth="200.0" BorderPane.alignment="CENTER">
-                    <BorderPane.margin>
-                        <Insets bottom="5.0" left="5.0" right="5.0" top="5.0"/>
-                    </BorderPane.margin>
-                    <Button mnemonicParsing="false" onAction="#prevTree" text="&lt;"/>
-                    <Label fx:id="operationBstLabel" text="Operacja">
-                        <HBox.margin>
-                            <Insets left="20.0" right="20.0"/>
-                        </HBox.margin>
-                    </Label>
-                    <Button mnemonicParsing="false" onAction="#nextTree" text="&gt;"/>
-                </HBox>
-            </bottom>
-        </BorderPane>
-    </Tab>
-    <Tab text="Drzewo AVL">
-        <BorderPane prefHeight="200.0" prefWidth="200.0">
-            <center>
-                <ScrollPane fx:id="avlPane" BorderPane.alignment="CENTER"/>
-            </center>
-            <bottom>
-                <HBox alignment="CENTER" prefHeight="50.0" prefWidth="200.0" BorderPane.alignment="CENTER">
-                    <BorderPane.margin>
-                        <Insets bottom="5.0" left="5.0" right="5.0" top="5.0"/>
-                    </BorderPane.margin>
-                    <Button mnemonicParsing="false" onAction="#prevTree" text="&lt;"/>
-                    <Label fx:id="operationAvlLabel" text="Operacja">
-                        <HBox.margin>
-                            <Insets left="20.0" right="20.0"/>
-                        </HBox.margin>
-                    </Label>
-                    <Button mnemonicParsing="false" onAction="#nextTree" text="&gt;"/>
-                </HBox>
-            </bottom>
-        </BorderPane>
-    </Tab>
-    <Tab text="Drzewo czerwono-czarne">
-        <BorderPane prefHeight="200.0" prefWidth="200.0">
-            <bottom>
-                <HBox alignment="CENTER" prefHeight="50.0" prefWidth="200.0" BorderPane.alignment="CENTER">
-                    <BorderPane.margin>
-                        <Insets bottom="5.0" left="5.0" right="5.0" top="5.0"/>
-                    </BorderPane.margin>
-                    <Button mnemonicParsing="false" onAction="#prevTree" text="&lt;"/>
-                    <Label fx:id="operationRbLabel" text="Operacja">
-                        <HBox.margin>
-                            <Insets left="20.0" right="20.0"/>
-                        </HBox.margin>
-                    </Label>
-                    <Button mnemonicParsing="false" onAction="#nextTree" text="&gt;"/>
-                </HBox>
-            </bottom>
-            <center>
-                <ScrollPane fx:id="rbPane" BorderPane.alignment="CENTER"/>
-            </center>
-        </BorderPane>
-    </Tab>
-    <Tab text="Drzewo Splay">
-        <BorderPane prefHeight="200.0" prefWidth="200.0">
-            <center>
-                <ScrollPane fx:id="splayPane" BorderPane.alignment="CENTER"/>
-            </center>
-            <bottom>
-                <HBox alignment="CENTER" prefHeight="50.0" prefWidth="200.0" BorderPane.alignment="CENTER">
-                    <BorderPane.margin>
-                        <Insets bottom="5.0" left="5.0" right="5.0" top="5.0"/>
-                    </BorderPane.margin>
-                    <Button mnemonicParsing="false" onAction="#prevTree" text="&lt;"/>
-                    <Label fx:id="operationSplayLabel" text="Operacja">
-                        <HBox.margin>
-                            <Insets left="20.0" right="20.0"/>
-                        </HBox.margin>
-                    </Label>
-                    <Button mnemonicParsing="false" onAction="#nextTree" text="&gt;"/>
-                </HBox>
-            </bottom>
-        </BorderPane>
-    </Tab>
+<TabPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="900.0" prefWidth="1600.0" tabClosingPolicy="UNAVAILABLE" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="pl.edu.wat.wcy.ita.gui.Controller">
+   <tabs>
+       <Tab text="Zarządanie">
+          <content>
+              <GridPane>
+                  <columnConstraints>
+                      <ColumnConstraints hgrow="SOMETIMES" maxWidth="1398.0" minWidth="10.0" prefWidth="1321.0" />
+                      <ColumnConstraints hgrow="SOMETIMES" maxWidth="795.0" minWidth="10.0" prefWidth="279.0" />
+                  </columnConstraints>
+                  <rowConstraints>
+                      <RowConstraints maxHeight="596.0" minHeight="10.0" prefHeight="473.0" vgrow="SOMETIMES" />
+                      <RowConstraints maxHeight="279.0" minHeight="0.0" prefHeight="246.0" vgrow="SOMETIMES" />
+                      <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+                  </rowConstraints>
+                 <children>
+                     <VBox alignment="CENTER" prefHeight="200.0" prefWidth="100.0" GridPane.columnIndex="1" GridPane.rowIndex="1" GridPane.rowSpan="2147483647">
+                         <opaqueInsets>
+                             <Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />
+                         </opaqueInsets>
+                        <children>
+                            <TextField fx:id="randomSize" alignment="CENTER" prefWidth="200.0" promptText="Ilość liczb do wylosowania" VBox.vgrow="ALWAYS">
+                                <VBox.margin>
+                                    <Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />
+                                </VBox.margin>
+                            </TextField>
+                            <Button mnemonicParsing="false" onAction="#addNumbers" prefWidth="1000.0" text="Wylosuj liczby">
+                                <VBox.margin>
+                                    <Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />
+                                </VBox.margin>
+                            </Button>
+                            <Button alignment="CENTER" mnemonicParsing="false" onAction="#addNodesButton" prefWidth="1000.0" text="Dodaj" textAlignment="CENTER">
+                                <VBox.margin>
+                                    <Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />
+                                </VBox.margin>
+                            </Button>
+                            <Button mnemonicParsing="false" prefWidth="1000.0" text="Wyszukaj">
+                                <VBox.margin>
+                                    <Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />
+                                </VBox.margin>
+                            </Button>
+                            <Button mnemonicParsing="false" onAction="#removeNodesButton" prefWidth="1000.0" text="Usuń">
+                                <VBox.margin>
+                                    <Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />
+                                </VBox.margin>
+                            </Button>
+                            <TextField fx:id="addProbability" promptText="Prawdopodobieństwo dodania">
+                                <VBox.margin>
+                                    <Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />
+                                </VBox.margin>
+                            </TextField>
+                            <TextField fx:id="removeProbability" promptText="Prawdopodobieństwo usunięcia">
+                                <VBox.margin>
+                                    <Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />
+                                </VBox.margin>
+                            </TextField>
+                            <TextField fx:id="findProbability" promptText="Prawdopodobieństwo wyszukania">
+                                <VBox.margin>
+                                    <Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />
+                                </VBox.margin>
+                            </TextField>
+                            <Button mnemonicParsing="false" onAction="#randomNodesButton" prefWidth="1000.0" text="Operacje losowe">
+                                <VBox.margin>
+                                    <Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />
+                                </VBox.margin>
+                            </Button>
+                            <Button mnemonicParsing="false" onAction="#saveCsvButton" prefWidth="1000.0" text="Zapisz do pliku csv">
+                                <VBox.margin>
+                                    <Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />
+                                </VBox.margin>
+                            </Button>
+                        </children>
+                     </VBox>
+                     <TextArea fx:id="numberArea" prefHeight="200.0" prefWidth="200.0" promptText="Podaj wartości do operacji" GridPane.columnIndex="1">
+                         <GridPane.margin>
+                             <Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />
+                         </GridPane.margin>
+                     </TextArea>
+                     <TableView fx:id="table" prefHeight="200.0" prefWidth="200.0" GridPane.rowSpan="2147483647">
+                         <columns>
+                             <TableColumn editable="false" prefWidth="15.0" text="Lp.">
+                                 <cellValueFactory>
+                                     <PropertyValueFactory property="lp" />
+                                 </cellValueFactory>
+                             </TableColumn>
+                             <TableColumn editable="false" minWidth="50" sortable="false" text="Operacja">
+                                 <cellValueFactory>
+                                     <PropertyValueFactory property="operation" />
+                                 </cellValueFactory>
+                             </TableColumn>
+                             <TableColumn editable="false">
+                                 <graphic>
+                                     <Label text="Liczba elementów" textAlignment="CENTER" wrapText="true" />
+                                 </graphic>
+                                 <cellValueFactory>
+                                     <PropertyValueFactory property="numberOfNodes" />
+                                 </cellValueFactory>
+                             </TableColumn>
+                             <TableColumn editable="false" sortable="false" text="Głebokość węzła" fx:id="depthColumn">
+                                 <columns>
+                                     <TableColumn editable="false" sortable="false" text="BST" fx:id="BSTDepthColumn">
+                                         <cellValueFactory>
+                                             <PropertyValueFactory property="bstDepth" />
+                                         </cellValueFactory>
+                                     </TableColumn>
+                                     <TableColumn editable="false" sortable="false" text="AVL" fx:id="AVLDepthColumn">
+                                         <cellValueFactory>
+                                             <PropertyValueFactory property="avlDepth" />
+                                         </cellValueFactory>
+                                     </TableColumn>
+                                     <TableColumn editable="false" sortable="false" text="RB" fx:id="RBDepthColumn">
+                                         <cellValueFactory>
+                                             <PropertyValueFactory property="rbDepth" />
+                                         </cellValueFactory>
+                                     </TableColumn>
+                                     <TableColumn editable="false" sortable="false" text="Splay" fx:id="splayDepthColumn">
+                                         <cellValueFactory>
+                                             <PropertyValueFactory property="splayDepth" />
+                                         </cellValueFactory>
+                                     </TableColumn>
+                                 </columns>
+                             </TableColumn>
+                             <TableColumn editable="false" sortable="false" text="Wysokość drzewa" fx:id="heightColumn">
+                                 <columns>
+                                     <TableColumn editable="false" sortable="false" text="BST" fx:id="BSTHeightColumn">
+                                         <cellValueFactory>
+                                             <PropertyValueFactory property="bstHeight" />
+                                         </cellValueFactory>
+                                     </TableColumn>
+                                     <TableColumn editable="false" sortable="false" text="AVL" fx:id="AVLHeightColumn">
+                                         <cellValueFactory>
+                                             <PropertyValueFactory property="avlHeight" />
+                                         </cellValueFactory>
+                                     </TableColumn>
+                                     <TableColumn editable="false" sortable="false" text="RB" fx:id="RBHeightColumn">
+                                         <cellValueFactory>
+                                             <PropertyValueFactory property="rbHeight" />
+                                         </cellValueFactory>
+                                     </TableColumn>
+                                     <TableColumn editable="false" sortable="false" text="Splay" fx:id="SplayHeightColumn">
+                                         <cellValueFactory>
+                                             <PropertyValueFactory property="splayHeight" />
+                                         </cellValueFactory>
+                                     </TableColumn>
+                                 </columns>
+                             </TableColumn>
+                             <TableColumn editable="false" sortable="false" text="Liczba liści" fx:id="leafsColumn">
+                                 <columns>
+                                     <TableColumn editable="false" sortable="false" text="BST" fx:id="BSTLeafsColumn">
+                                         <cellValueFactory>
+                                             <PropertyValueFactory property="bstLeafs" />
+                                         </cellValueFactory>
+                                     </TableColumn>
+                                     <TableColumn editable="false" sortable="false" text="AVL" fx:id="AVLLeafsColumn">
+                                         <cellValueFactory>
+                                             <PropertyValueFactory property="avlLeafs" />
+                                         </cellValueFactory>
+                                     </TableColumn>
+                                     <TableColumn editable="false" sortable="false" text="RB" fx:id="RBLeafsColumn">
+                                         <cellValueFactory>
+                                             <PropertyValueFactory property="rbLeafs" />
+                                         </cellValueFactory>
+                                     </TableColumn>
+                                     <TableColumn editable="false" sortable="false" text="Splay" fx:id="SplayLeafsColumn">
+                                         <cellValueFactory>
+                                             <PropertyValueFactory property="splayLeafs" />
+                                         </cellValueFactory>
+                                     </TableColumn>
+                                 </columns>
+                             </TableColumn>
+                             <TableColumn editable="false" sortable="false" text="Liczba rotacji" fx:id="rotateColumn">
+                                 <columns>
+                                     <TableColumn editable="false" sortable="false" text="AVL" fx:id="AVLRotateColumn">
+                                         <cellValueFactory>
+                                             <PropertyValueFactory property="avlRotates" />
+                                         </cellValueFactory>
+                                     </TableColumn>
+                                     <TableColumn editable="false" sortable="false" text="RB" fx:id="RBRotateColumn">
+                                         <cellValueFactory>
+                                             <PropertyValueFactory property="rbRotates" />
+                                         </cellValueFactory>
+                                     </TableColumn>
+                                     <TableColumn editable="false" sortable="false" text="Splay" fx:id="SplayRotateColumn">
+                                         <cellValueFactory>
+                                             <PropertyValueFactory property="splayRotates" />
+                                         </cellValueFactory>
+                                     </TableColumn>
+                                 </columns>
+                             </TableColumn>
+                         </columns>
+                         <columnResizePolicy>
+                             <TableView fx:constant="CONSTRAINED_RESIZE_POLICY" />
+                         </columnResizePolicy>
+                         <GridPane.margin>
+                             <Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />
+                         </GridPane.margin>
+                     </TableView>
+                 </children>
+              </GridPane>
+          </content>
+       </Tab>
+       <Tab text="Drzewo BST" fx:id="BSTTab">
+          <content>
+              <BorderPane prefHeight="200.0" prefWidth="200.0">
+                  <center>
+                      <ScrollPane fx:id="bstPane" BorderPane.alignment="CENTER" />
+                  </center>
+                  <bottom>
+                      <HBox alignment="CENTER" prefHeight="50.0" prefWidth="200.0" BorderPane.alignment="CENTER">
+                          <BorderPane.margin>
+                              <Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />
+                          </BorderPane.margin>
+                         <children>
+                             <Button mnemonicParsing="false" onAction="#prevTree" text="&lt;" />
+                             <Label fx:id="operationBstLabel" text="Operacja">
+                                 <HBox.margin>
+                                     <Insets left="20.0" right="20.0" />
+                                 </HBox.margin>
+                             </Label>
+                             <Button mnemonicParsing="false" onAction="#nextTree" text="&gt;" />
+                         </children>
+                      </HBox>
+                  </bottom>
+              </BorderPane>
+          </content>
+       </Tab>
+       <Tab text="Drzewo AVL" fx:id="AVLTab">
+          <content>
+              <BorderPane prefHeight="200.0" prefWidth="200.0">
+                  <center>
+                      <ScrollPane fx:id="avlPane" BorderPane.alignment="CENTER" />
+                  </center>
+                  <bottom>
+                      <HBox alignment="CENTER" prefHeight="50.0" prefWidth="200.0" BorderPane.alignment="CENTER">
+                          <BorderPane.margin>
+                              <Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />
+                          </BorderPane.margin>
+                         <children>
+                             <Button mnemonicParsing="false" onAction="#prevTree" text="&lt;" />
+                             <Label fx:id="operationAvlLabel" text="Operacja">
+                                 <HBox.margin>
+                                     <Insets left="20.0" right="20.0" />
+                                 </HBox.margin>
+                             </Label>
+                             <Button mnemonicParsing="false" onAction="#nextTree" text="&gt;" />
+                         </children>
+                      </HBox>
+                  </bottom>
+              </BorderPane>
+          </content>
+       </Tab>
+       <Tab text="Drzewo czerwono-czarne" fx:id="RBTab">
+          <content>
+              <BorderPane prefHeight="200.0" prefWidth="200.0">
+                  <bottom>
+                      <HBox alignment="CENTER" prefHeight="50.0" prefWidth="200.0" BorderPane.alignment="CENTER">
+                          <BorderPane.margin>
+                              <Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />
+                          </BorderPane.margin>
+                         <children>
+                             <Button mnemonicParsing="false" onAction="#prevTree" text="&lt;" />
+                             <Label fx:id="operationRbLabel" text="Operacja">
+                                 <HBox.margin>
+                                     <Insets left="20.0" right="20.0" />
+                                 </HBox.margin>
+                             </Label>
+                             <Button mnemonicParsing="false" onAction="#nextTree" text="&gt;" />
+                         </children>
+                      </HBox>
+                  </bottom>
+                  <center>
+                      <ScrollPane fx:id="rbPane" BorderPane.alignment="CENTER" />
+                  </center>
+              </BorderPane>
+          </content>
+       </Tab>
+       <Tab text="Drzewo Splay" fx:id="SplayTab">
+          <content>
+              <BorderPane prefHeight="200.0" prefWidth="200.0">
+                  <center>
+                      <ScrollPane fx:id="splayPane" BorderPane.alignment="CENTER" />
+                  </center>
+                  <bottom>
+                      <HBox alignment="CENTER" prefHeight="50.0" prefWidth="200.0" BorderPane.alignment="CENTER">
+                          <BorderPane.margin>
+                              <Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />
+                          </BorderPane.margin>
+                         <children>
+                             <Button mnemonicParsing="false" onAction="#prevTree" text="&lt;" />
+                             <Label fx:id="operationSplayLabel" text="Operacja">
+                                 <HBox.margin>
+                                     <Insets left="20.0" right="20.0" />
+                                 </HBox.margin>
+                             </Label>
+                             <Button mnemonicParsing="false" onAction="#nextTree" text="&gt;" />
+                         </children>
+                      </HBox>
+                  </bottom>
+              </BorderPane>
+          </content>
+       </Tab>
+   </tabs>
 </TabPane>

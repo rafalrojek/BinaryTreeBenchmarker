@@ -8,13 +8,14 @@ import pl.edu.wat.wcy.ita.Tree.Tree;
 public class BinaryTree implements Tree<BinaryNode> {
     private BinaryNode root = null;
     private Integer nodeDepth = 0;
+    private Integer rotates;
 
     @Override
     public BinaryNode findNode (Integer value) {
+        nodeDepth = root.getNodeDepth(value);
         BinaryNode node = null;
         if (root != null) node = root.findNode(value);
         if (node == null || !node.getValue().equals(value)) return null;
-        nodeDepth = root.getNodeDepth(value);
         return node;
     }
 
@@ -69,10 +70,10 @@ public class BinaryTree implements Tree<BinaryNode> {
 
     @Override
     public void removeNode (Integer value) {
+        nodeDepth = root.getNodeDepth(value);
         BinaryNode x = findNode(value);
         if (x == null) return;
 
-        nodeDepth = root.getNodeDepth(value);
         BinaryNode y, z;
 
         y = x.getLeft() == null || x.getRight() == null ? x : x.getSuccessor();

@@ -9,6 +9,7 @@ public class RedBlackTree implements Tree<RedBlackNode> {
     public static RedBlackNode nil = new RedBlackNode();
     private RedBlackNode root = nil;
     private Integer nodeDepth = 0;
+    private Integer rotates = 0;
 
     public RedBlackTree(RedBlackTree redBlackTree) {
         if (redBlackTree != null && redBlackTree.getRoot() != nil) this.root = redBlackTree.getRoot().copy(null);
@@ -207,6 +208,7 @@ public class RedBlackTree implements Tree<RedBlackNode> {
     }
 
     private void leftRotate (RedBlackNode a) {
+        rotates++;
         RedBlackNode b = a.getRight();
         if (b == nil) return;
         RedBlackNode p = a.getFather();
@@ -223,6 +225,7 @@ public class RedBlackTree implements Tree<RedBlackNode> {
     }
 
     private void rightRotate (RedBlackNode a) {
+        rotates++;
         RedBlackNode b = a.getLeft();
         if (b == nil) return;
         RedBlackNode p = a.getFather();
