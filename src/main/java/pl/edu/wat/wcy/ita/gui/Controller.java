@@ -1,6 +1,7 @@
 package pl.edu.wat.wcy.ita.gui;
 import javafx.collections.ObservableList;
 import javafx.concurrent.Task;
+import javafx.event.ActionEvent;
 import javafx.geometry.Pos;
 import javafx.scene.Scene;
 import javafx.scene.canvas.Canvas;
@@ -68,6 +69,7 @@ public class Controller {
 
     public void addNodesButton() { TreeOperation(OperationType.ADD); }
     public void removeNodesButton() { TreeOperation(OperationType.REMOVE); }
+    public void findNodesButton() { TreeOperation(OperationType.FIND); }
     public void randomNodesButton() { TreeOperation(OperationType.RANDOM); }
     public void prevTree() { setTree(TreeContainer.getPrev()); }
     public void nextTree() { setTree(TreeContainer.getNext()); }
@@ -335,4 +337,5 @@ public class Controller {
         RBTab.setDisable(!settings.isRB());
         SplayTab.setDisable(!settings.isSPLAY());
     }
+
 }
